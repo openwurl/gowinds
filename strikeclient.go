@@ -7,7 +7,7 @@ import (
 // RequestOptions specifies global API parameters
 type RequestOptions struct {
 	// AccountHash is required and variable
-	AccountHash string
+	AccountHash string `url:"account_hash,omitempty"`
 }
 
 func (r *RequestOptions) createURL() (url string) {

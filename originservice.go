@@ -1,5 +1,7 @@
 package gowinds
 
+import "fmt"
+
 // /api/v1/accounts/{account_hash}/origins/ | {origin_id}
 
 // OriginService interface defines available origin methods
@@ -9,6 +11,19 @@ type OriginService interface {
 	Delete()
 	Get()
 	Update()
+}
+
+// OriginOptions specifies origin specific parameters
+type OriginOptions struct {
+	OriginID string `url:"origin_id,omitempty"`
+}
+
+func (o *OriginOptions) createPath() (url string) {
+	if o.OriginID != "" {
+		url = fmt.Sprintf("/%s", o.OriginID)
+	}
+
+	return
 }
 
 // Origin represents an origin object
@@ -52,7 +67,19 @@ func (s *OriginServiceOp) Create() {
 }
 
 // List returns the account's origins
-func (s *OriginServiceOp) List(reqOpt *RequestOptions) (*OriginList, error) {
+func (s *OriginServiceOp) List(reqOpt *RequestOptions, origOpt *OriginOptions) (*OriginList, error) {
+	if reqOpt == nil {
+		return nil, fmt.Errorf("no account hash defined")
+	}
+
+	var requestPath string
+	if origOpt != nil {
+		requestPath = origOpt.createPath()
+	}
+
+	path := fmt.Sprintf("%s?%s", reqOpt.createURL(), requestPath)
+
+	fmt.Println(path)
 	return nil, nil
 }
 
