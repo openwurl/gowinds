@@ -20,7 +20,7 @@ type OriginOptions struct {
 
 func (o *OriginOptions) createPath() (url string) {
 	if o.OriginID != "" {
-		url = fmt.Sprintf("/%s", o.OriginID)
+		url = fmt.Sprintf("%s", o.OriginID)
 	}
 
 	return
