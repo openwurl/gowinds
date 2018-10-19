@@ -1,5 +1,20 @@
 package gowinds
 
+import (
+	"fmt"
+)
+
+// RequestOptions specifies global API parameters
+type RequestOptions struct {
+	// AccountHash is required and variable
+	AccountHash string
+}
+
+func (r *RequestOptions) createURL() (url string) {
+	url = fmt.Sprintf("/api/v1/accounts/%s", r.AccountHash)
+	return
+}
+
 // Client is the core wrapper for all functions in StrikeTracker
 type Client struct {
 	AuthorizationHeaderToken string

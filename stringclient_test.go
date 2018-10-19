@@ -12,4 +12,5 @@ func TestNew(t *testing.T) {
 	if c.ApplicationID != "APPNAME" {
 		t.Fatalf("Expected APPNAME as ApplicationID, got %v", c.ApplicationID)
 	}
+
 }
