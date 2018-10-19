@@ -37,22 +37,18 @@ help:           ## Show this help.
 
 .PHONY: test cover build buildall clean
 
+travis: clean test build
+
 test:	## Run test with coverage
 	go test -v -race -cover -coverprofile=cov.out
 
 cover:	## Open coverage
 	go tool cover --html=cov.out
 
-build:	## Build based on input vars
-	@GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o target/$(VERSION)/$(GOOS)/gowinds
-
-buildnative:	## Build for current OS/Arch
+build:	## Build for testing
 	go build -o target/gowinds
 
-buildall:	## Build all targets
-	@echo "Not implemented yet."
-
 clean:	## Clean build
-	go clean
-	rm -rf target
-	rm -rf cov.out
+	@go clean
+	@rm -rf target
+	@rm -rf cov.out
