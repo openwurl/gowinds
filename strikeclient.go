@@ -1,6 +1,8 @@
 package gowinds
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -39,15 +41,34 @@ type Client struct {
 // NewRequest initializes a new http request with headers
 func (c *Client) NewRequest(method, path string, body interface{}) (*http.Request, error) {
 	// Process relative path
-	//rel, err := url.Parse(path)
-	//if err != nil {
-	//	return nil, err
-	//}
+	rel, err := url.Parse(path)
+	if err != nil {
+		return nil, err
+	}
 
-	//u := c.BaseURL.ResolveReference(rel)
+	u := c.BaseURL.ResolveReference(rel)
 
 	// json encode the request if exists
-	return nil, nil
+	buf := new(bytes.Buffer)
+	if body != nil {
+		err := json.NewEncoder(buf).Encode(body)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	req, err := http.NewRequest(method, u.String(), buf)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Close = true
+
+	req.Header.Add("Authorization", c.AuthorizationHeaderToken)
+	req.Header.Add("X-Application-Id", applicationID)
+	req.Header.Add("Content-Type", mediaType)
+
+	return req, nil
 }
 
 // New creates a new connection client
