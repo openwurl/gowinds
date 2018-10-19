@@ -39,12 +39,15 @@ type Client struct {
 // NewRequest initializes a new http request with headers
 func (c *Client) NewRequest(method, path string, body interface{}) (*http.Request, error) {
 	// Process relative path
-	rel, err := url.Parse(path)
-	if err != nil {
-		return nil, err
-	}
+	//rel, err := url.Parse(path)
+	//if err != nil {
+	//	return nil, err
+	//}
 
-	u := c.BaseURL.ResolveReference(rel)
+	//u := c.BaseURL.ResolveReference(rel)
+
+	// json encode the request if exists
+	return nil, nil
 }
 
 // New creates a new connection client
