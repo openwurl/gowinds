@@ -1,13 +1,17 @@
 package gowinds
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/davecgh/go-spew/spew"
+)
 
 // /api/v1/accounts/{account_hash}/origins/ | {origin_id}
 
 // OriginService interface defines available origin methods
 type OriginService interface {
 	Create()
-	List()
+	List(reqOpt *RequestOptions) (*OriginList, error)
 	Delete()
 	Get()
 	Update()
@@ -67,20 +71,32 @@ func (s *OriginServiceOp) Create() {
 }
 
 // List returns the account's origins
-func (s *OriginServiceOp) List(reqOpt *RequestOptions, origOpt *OriginOptions) (*OriginList, error) {
+//func (s *OriginServiceOp) List(reqOpt *RequestOptions, origOpt *OriginOptions) (*OriginList, error) {
+func (s *OriginServiceOp) List(reqOpt *RequestOptions) (*OriginList, error) {
 	if reqOpt == nil {
 		return nil, fmt.Errorf("no account hash defined")
 	}
 
-	var requestPath string
-	if origOpt != nil {
-		requestPath = origOpt.createPath()
+	originsResponse := &OriginList{}
+
+	//var requestPath string
+	//if origOpt != nil {
+	//	requestPath = origOpt.createPath()
+	//}
+
+	path := fmt.Sprintf("%s/origins", reqOpt.createURL())
+
+	_, err := s.client.DoRequest("GET", path, nil, originsResponse)
+	if err != nil {
+		fmt.Println("[ERRO] - ", err)
 	}
 
-	path := fmt.Sprintf("%s?%s", reqOpt.createURL(), requestPath)
+	fmt.Println("====")
+	spew.Dump(originsResponse)
+	fmt.Println("====")
 
 	fmt.Println(path)
-	return nil, nil
+	return originsResponse, nil
 }
 
 // Delete terminates an origin
