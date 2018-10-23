@@ -120,6 +120,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	// for api error payload before passing back
 
 	if v != nil {
+		// return the whole deal if no struct injected
 		if w, ok := v.(io.Writer); ok {
 			io.Copy(w, resp.Body)
 		} else {
