@@ -2,6 +2,7 @@ package gowinds
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -31,8 +32,13 @@ var coreAPIStub = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter
 }))
 
 func TestNewClient(t *testing.T) {
+	c, err := NewClient("")
+	if err == nil {
+		t.Fatal("expected new client instantiation to fail, instead got client: ", c)
+	}
+
 	testToken := "TestToken"
-	c, err := NewClient(testToken)
+	c, err = NewClient(testToken)
 	if err != nil {
 		t.Fatal("failed to instantiate new client: ", err)
 	}
@@ -77,11 +83,23 @@ func TestDoRequest(t *testing.T) {
 		t.Fatal("failed to instantiate new client: ", err)
 	}
 
-	c.SetBaseURL(coreAPIStub.URL)
+	// purposefully bad URL
+	err = c.SetBaseURL("postgres://user:abc{DEf1=ghi@example.com:5432/db?sslmode=require")
+	if err == nil {
+		t.Fatalf("expected c.SetBaseURL to error, got: %v - %v", c.BaseURL, err)
+	}
 
+	err = c.SetBaseURL(coreAPIStub.URL)
+	if err != nil {
+		t.Fatalf("expected c.SetBaseURL to not error, got: %v", err)
+	}
+
+	reqOpt := RequestOptions{
+		AccountHash: "default",
+	}
 	var hostResponse interface{}
 	method := "GET"
-	path := "/default/hosts/brokenhash"
+	path := fmt.Sprintf("%s/default/hosts/brokenhash", reqOpt.createURL())
 	resp, err := c.DoRequest(method, path, nil, hostResponse)
 	if err != nil {
 		t.Fatalf("expected err to be nil, got %v", err)

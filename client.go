@@ -55,6 +55,12 @@ func (c *Client) SetLogger(l logger) error {
 	return nil
 }
 
+// SetDebug enables/disables debug logging after creating a client
+func (c *Client) SetDebug(toggle bool) {
+	c.debug = toggle
+	return
+}
+
 // SetBaseURL Sets optional BaseURL just in case - mostly for tests
 func (c *Client) SetBaseURL(u string) error {
 	url, err := url.Parse(u)
@@ -79,7 +85,7 @@ func NewClient(authorizationHeaderToken string) (*Client, error) {
 		return nil, err
 	}
 
-	c := &Client{client: &http.Client{}, AuthorizationHeaderToken: authorizationHeaderToken, BaseURL: u}
+	c := &Client{client: &http.Client{}, AuthorizationHeaderToken: authorizationHeaderToken, BaseURL: u, debug: false}
 	// Mount services
 	// c.Analytics
 	// c.Hosts
@@ -103,6 +109,10 @@ func (c *Client) NewRequest(method, path string, body interface{}) (*http.Reques
 	req, err := http.NewRequest(method, u.String(), nil)
 	if err != nil {
 		return nil, err
+	}
+
+	if c.debug {
+		c.logger.Printf("Request: ", req)
 	}
 
 	req.Close = true
